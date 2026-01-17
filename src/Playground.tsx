@@ -25,7 +25,7 @@ const DEFAULT_CONFIG = {
 };
 
 export function Playground() {
-  const [activeTab, setActiveTab] = useState<"code" | "prompt">("code");
+  const [activeTab, setActiveTab] = useState<"code" | "prompt">("prompt");
   const [config, setConfig] = useState(DEFAULT_CONFIG);
 
   const generateCode = () => {
