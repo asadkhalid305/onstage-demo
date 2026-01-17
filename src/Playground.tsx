@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { OnboardingProvider, OnboardingModal, useOnboarding, type OnboardingTheme, type OnboardingStep } from "onstage";
+import { OnboardingProvider, OnboardingModal, useOnboarding, type OnboardingModalProps, type OnboardingTheme, type OnboardingStep } from "onstage";
 import { hexToHsl } from "./utils/colors";
 
 const playgroundSteps: OnboardingStep[] = [
@@ -16,6 +16,7 @@ const playgroundSteps: OnboardingStep[] = [
 ];
 
 export function Playground() {
+  const [activeTab, setActiveTab] = useState<"code" | "prompt">("code");
   const [config, setConfig] = useState({
     theme: "light" as OnboardingTheme,
     backdrop: "default" as "default" | "blur" | "transparent",
@@ -33,10 +34,7 @@ export function Playground() {
     if (!config.allowClickOutside) props.push(`  allowClickOutside={false}`);
     
     const styleProps = [];
-    // Only add color prop if changed from default black
     if (config.primaryColor !== "#000000") {
-      // We show the Hex here for user convenience, assuming they might handle conversion 
-      // or we can show the HSL. Let's show the HSL value for accuracy since that's what we pass.
       const hsl = hexToHsl(config.primaryColor);
       styleProps.push(`    '--primary': '${hsl}'`);
     }
@@ -53,6 +51,43 @@ ${styleProps.join(",\n")}
     return `<OnboardingModal
 ${props.join("\n")}${styleString}
 />`;
+  };
+
+  const generatePrompt = () => {
+    const parts = [
+      "I want to add a professional onboarding wizard to my React app using the 'onstage' library.",
+      "",
+      "1. Install the package: `npm install onstage`",
+      "2. Import the styles in my root file (App.tsx or main.tsx): `import 'onstage/styles.css'`",
+      "3. Implement the onboarding flow with these specific settings:",
+      "",
+      `- Theme: Use the "${config.theme}" preset.`,
+    ];
+
+    if (config.backdrop !== "default") {
+      parts.push(`- Backdrop: Set it to "${config.backdrop}" for a ${config.backdrop === "blur" ? "frosted glass" : "transparent"} effect.`);
+    }
+
+    if (config.gradient !== "animated") {
+      parts.push(`- Gradient: Set the background gradient to "${config.gradient}".`);
+    }
+
+    if (!config.allowClickOutside) {
+      parts.push("- Interaction: Enable Strict Mode (disable clicking outside to close).");
+    }
+
+    if (config.primaryColor !== "#000000") {
+      parts.push(`- Brand Color: Override the primary color to this HSL value: "${hexToHsl(config.primaryColor)}".`);
+    }
+
+    if (config.radius !== 0.5) {
+      parts.push(`- Styling: Set the border radius to ${config.radius}rem.`);
+    }
+
+    parts.push("");
+    parts.push("Please set up the provider and modal with these props.");
+
+    return parts.join("\n");
   };
 
   return (
@@ -153,7 +188,7 @@ ${props.join("\n")}${styleString}
 
       </div>
 
-      {/* --- Preview & Code --- */}
+      {/* --- Preview & Output --- */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
         {/* Preview Area */}
@@ -172,7 +207,6 @@ ${props.join("\n")}${styleString}
           <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '20px', color: '#374151' }}>Preview Area</h3>
           
           <OnboardingProvider 
-            // Removed key={JSON.stringify(config)} to prevent remount flashing
             steps={playgroundSteps} 
             defaultOpen={false} 
           >
@@ -183,29 +217,59 @@ ${props.join("\n")}${styleString}
           </OnboardingProvider>
         </div>
 
-        {/* Code Output */}
-        <div style={{ 
-          background: '#111827', 
-          borderRadius: '16px', 
-          padding: '24px', 
-          position: 'relative', 
-          overflow: 'hidden',
-          minHeight: '220px', // Prevent layout shift
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ color: '#9ca3af', fontSize: '0.8rem', fontWeight: '600', letterSpacing: '0.05em' }}>REACT CODE</span>
+        {/* Output Tabs */}
+        <div style={{ background: '#111827', borderRadius: '16px', padding: '24px', position: 'relative', overflow: 'hidden', minHeight: '250px', display: 'flex', flexDirection: 'column' }}>
+          
+          {/* Header & Tabs */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <button 
+                onClick={() => setActiveTab("code")}
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  color: activeTab === "code" ? 'white' : '#6b7280', 
+                  fontWeight: '700', 
+                  fontSize: '0.9rem', 
+                  cursor: 'pointer',
+                  borderBottom: activeTab === "code" ? '2px solid #6366f1' : '2px solid transparent',
+                  paddingBottom: '4px'
+                }}
+              >
+                REACT CODE
+              </button>
+              <button 
+                onClick={() => setActiveTab("prompt")}
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  color: activeTab === "prompt" ? 'white' : '#6b7280', 
+                  fontWeight: '700', 
+                  fontSize: '0.9rem', 
+                  cursor: 'pointer',
+                  borderBottom: activeTab === "prompt" ? '2px solid #a855f7' : '2px solid transparent',
+                  paddingBottom: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <span>✨ AI PROMPT</span>
+              </button>
+            </div>
+
             <button 
-              onClick={() => navigator.clipboard.writeText(generateCode())}
+              onClick={() => navigator.clipboard.writeText(activeTab === "code" ? generateCode() : generatePrompt())}
               style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}
             >
               Copy
             </button>
           </div>
+
+          {/* Content */}
           <pre style={{ margin: 0, overflowX: 'auto', flex: 1 }}>
             <code style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#e5e7eb', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
-              {generateCode()}
+              {activeTab === "code" ? generateCode() : generatePrompt()}
             </code>
           </pre>
         </div>
@@ -241,11 +305,9 @@ function LaunchButton() {
 }
 
 function ModalWrapper({ config }: { config: any }) {
-  // Convert Hex to HSL for the CSS variable
   const hsl = hexToHsl(config.primaryColor);
 
   const style = {
-    // Only set if not black (default)
     ...(config.primaryColor !== "#000000" ? { '--primary': hsl } : {}),
     ...(config.radius !== 0.5 ? { '--radius': `${config.radius}rem` } : {}),
   } as React.CSSProperties;
