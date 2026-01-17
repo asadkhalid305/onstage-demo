@@ -15,16 +15,19 @@ const playgroundSteps: OnboardingStep[] = [
   },
 ];
 
+const DEFAULT_CONFIG = {
+  theme: "dark" as OnboardingTheme,
+  backdrop: "blur" as "default" | "blur" | "transparent",
+  gradient: "animated" as "animated" | "static" | "none",
+  allowClickOutside: true,
+  primaryColor: "#6366f1", // Indigo default (visible in dark mode)
+  radius: 0.5,
+  device: "desktop" as "desktop" | "tablet" | "mobile",
+};
+
 export function Playground() {
   const [activeTab, setActiveTab] = useState<"code" | "prompt">("code");
-  const [config, setConfig] = useState({
-    theme: "light" as OnboardingTheme,
-    backdrop: "default" as "default" | "blur" | "transparent",
-    gradient: "animated" as "animated" | "static" | "none",
-    allowClickOutside: true,
-    primaryColor: "#000000",
-    radius: 0.5,
-  });
+  const [config, setConfig] = useState(DEFAULT_CONFIG);
 
   const generateCode = () => {
     const props = [];
@@ -34,9 +37,11 @@ export function Playground() {
     if (!config.allowClickOutside) props.push(`  allowClickOutside={false}`);
     
     const styleProps = [];
-    if (config.primaryColor !== "#000000") {
+    if (config.primaryColor !== DEFAULT_CONFIG.primaryColor) {
       const hsl = hexToHsl(config.primaryColor);
       styleProps.push(`    '--primary': '${hsl}'`);
+      // We assume user handles foreground contrast in real code, or we could export it.
+      // For the prompt, we'll mention it.
     }
     if (config.radius !== 0.5) styleProps.push(`    '--radius': '${config.radius}rem'`);
 
@@ -63,11 +68,11 @@ ${props.join("\n")}${styleString}
       "2. Import the styles in my root file (App.tsx or main.tsx): `import 'onstage/styles.css'`",
       "3. Implement the onboarding flow with these specific settings:",
       "",
-      `- Theme: Use the "${config.theme}" preset.`,
+      `- Theme: Use the "${config.theme}" preset.`, 
     ];
 
     if (config.backdrop !== "default") {
-      parts.push(`- Backdrop: Set it to "${config.backdrop}" for a ${config.backdrop === "blur" ? "frosted glass" : "transparent"} effect.`);
+      parts.push(`- Backdrop: Set it to "${config.backdrop}".`);
     }
 
     if (config.gradient !== "animated") {
@@ -78,8 +83,8 @@ ${props.join("\n")}${styleString}
       parts.push("- Interaction: Enable Strict Mode (disable clicking outside to close).");
     }
 
-    if (config.primaryColor !== "#000000") {
-      parts.push(`- Brand Color: Override the primary color to this HSL value: "${hexToHsl(config.primaryColor)}".`);
+    if (config.primaryColor !== DEFAULT_CONFIG.primaryColor) {
+      parts.push(`- Brand Color: Override the primary color to HSL "${hexToHsl(config.primaryColor)}". Ensure high contrast foreground text.`);
     }
 
     if (config.radius !== 0.5) {
@@ -92,13 +97,53 @@ ${props.join("\n")}${styleString}
     return parts.join("\n");
   };
 
+  const handleReset = () => setConfig(DEFAULT_CONFIG);
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '40px', minHeight: '600px' }}>
       
       {/* --- Sidebar Controls --- */}
       <div style={{ background: 'white', padding: '24px', borderRadius: '16px', border: '1px solid #e5e7eb', height: 'fit-content' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '20px' }}>Configurator</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: '700', margin: 0 }}>Configurator</h2>
+          <button 
+            onClick={handleReset}
+            style={{ fontSize: '0.8rem', color: '#6366f1', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600' }}
+          >
+            Reset
+          </button>
+        </div>
         
+        {/* Device Simulator */}
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', fontSize: '0.9rem' }}>Preview Device</label>
+          <div style={{ display: 'flex', background: '#f3f4f6', padding: '4px', borderRadius: '8px' }}>
+            {['desktop', 'tablet', 'mobile'].map((d) => (
+              <button
+                key={d}
+                onClick={() => setConfig(prev => ({ ...prev, device: d as any }))}
+                style={{
+                  flex: 1,
+                  padding: '6px',
+                  border: 'none',
+                  background: config.device === d ? 'white' : 'transparent',
+                  borderRadius: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: '600',
+                  color: config.device === d ? 'black' : '#6b7280',
+                  cursor: 'pointer',
+                  boxShadow: config.device === d ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
+                  textTransform: 'capitalize'
+                }}
+              >
+                {d}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <hr style={{ margin: '20px 0', border: 'none', borderTop: '1px solid #e5e7eb' }} />
+
         {/* Theme */}
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', fontSize: '0.9rem' }}>Theme</label>
@@ -108,7 +153,7 @@ ${props.join("\n")}${styleString}
             style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db' }}
           >
             <option value="light">Light</option>
-            <option value="dark">Dark</option>
+            <option value="dark">Dark (Default)</option>
             <option value="glass">Glass</option>
             <option value="midnight">Midnight</option>
             <option value="minimal">Minimal</option>
@@ -125,7 +170,7 @@ ${props.join("\n")}${styleString}
             onChange={(e) => setConfig(prev => ({ ...prev, backdrop: e.target.value as any }))}
             style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db' }}
           >
-            <option value="default">Default</option>
+            <option value="default">Default (Dark)</option>
             <option value="blur">Blur</option>
             <option value="transparent">Transparent</option>
           </select>
@@ -139,7 +184,7 @@ ${props.join("\n")}${styleString}
             onChange={(e) => setConfig(prev => ({ ...prev, gradient: e.target.value as any }))}
             style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db' }}
           >
-            <option value="animated">Animated</option>
+            <option value="animated">Animated (Default)</option>
             <option value="static">Static</option>
             <option value="none">None</option>
           </select>
@@ -204,26 +249,47 @@ ${props.join("\n")}${styleString}
           alignItems: 'center',
           justifyContent: 'center',
           padding: '40px',
-          position: 'relative'
+          position: 'relative',
+          overflow: 'hidden' // Contain the simulated device
         }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '20px', color: '#374151' }}>Preview Area</h3>
           
-          <OnboardingProvider 
-            steps={playgroundSteps} 
-            defaultOpen={false} 
-          >
-            <div style={{marginBottom: '20px'}}>
-               <LaunchButton />
-            </div>
-            <ModalWrapper config={config} />
-          </OnboardingProvider>
+          {/* Device Simulator Container */}
+          <div style={{
+            width: config.device === 'mobile' ? '375px' : config.device === 'tablet' ? '768px' : '100%',
+            height: '100%',
+            transition: 'width 0.3s ease',
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            // Add a border/shadow to visualize the device boundaries if not desktop
+            ...(config.device !== 'desktop' ? { border: '2px solid #e5e7eb', borderRadius: '12px', background: 'white', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' } : {})
+          }}>
+            <OnboardingProvider 
+              steps={playgroundSteps} 
+              defaultOpen={false} 
+            >
+              <div style={{marginBottom: '20px'}}>
+                 <LaunchButton />
+              </div>
+              <ModalWrapper config={config} />
+            </OnboardingProvider>
+          </div>
         </div>
 
         {/* Output Tabs */}
-        <div style={{ background: '#111827', borderRadius: '16px', padding: '24px', position: 'relative', overflow: 'hidden', minHeight: '250px', display: 'flex', flexDirection: 'column' }}>
-          
-          {/* Header & Tabs */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ 
+          background: '#111827', 
+          borderRadius: '16px', 
+          padding: '24px', 
+          position: 'relative', 
+          overflow: 'hidden',
+          minHeight: '220px',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <div style={{ display: 'flex', gap: '16px' }}>
               <button 
                 onClick={() => setActiveTab("code")}
@@ -268,7 +334,6 @@ ${props.join("\n")}${styleString}
             </button>
           </div>
 
-          {/* Content */}
           <pre style={{ margin: 0, overflowX: 'auto', flex: 1 }}>
             <code style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#e5e7eb', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
               {activeTab === "code" ? generateCode() : generatePrompt()}
@@ -306,11 +371,24 @@ function LaunchButton() {
   );
 }
 
+// Wrapper to inject props
 function ModalWrapper({ config }: { config: any }) {
   const hsl = hexToHsl(config.primaryColor);
+  
+  // Calculate contrasting foreground color
+  // Simple heuristic: if color is dark, text is white. If color is light, text is black.
+  // Converting hex to RGB for brightness calculation
+  const r = parseInt(config.primaryColor.substr(1, 2), 16);
+  const g = parseInt(config.primaryColor.substr(3, 2), 16);
+  const b = parseInt(config.primaryColor.substr(5, 2), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  const foregroundHsl = brightness > 128 ? '0 0% 0%' : '0 0% 100%';
 
   const style = {
-    ...(config.primaryColor !== "#000000" ? { '--primary': hsl } : {}),
+    ...(config.primaryColor !== "#6366f1" ? { 
+      '--primary': hsl,
+      '--primary-foreground': foregroundHsl
+    } : {}),
     ...(config.radius !== 0.5 ? { '--radius': `${config.radius}rem` } : {}),
   } as React.CSSProperties;
 
