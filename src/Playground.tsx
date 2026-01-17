@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { OnboardingProvider, OnboardingModal, useOnboarding, type OnboardingModalProps, type OnboardingTheme, type OnboardingStep } from "onstage";
+import { hexToHsl } from "./utils/colors";
 
-// Default Steps for the Playground
 const playgroundSteps: OnboardingStep[] = [
   {
     title: "Design Your Experience",
@@ -16,18 +16,10 @@ const playgroundSteps: OnboardingStep[] = [
 ];
 
 export function Playground() {
-  // --- State ---
-  const [config, setConfig] = useState<{ 
-    theme: OnboardingTheme;
-    backdrop: "default" | "blur" | "transparent";
-    gradient: "animated" | "static" | "none";
-    allowClickOutside: boolean;
-    primaryColor: string;
-    radius: number;
-  }>({
-    theme: "light",
-    backdrop: "default",
-    gradient: "animated",
+  const [config, setConfig] = useState({
+    theme: "light" as OnboardingTheme,
+    backdrop: "default" as "default" | "blur" | "transparent",
+    gradient: "animated" as "animated" | "static" | "none",
     allowClickOutside: true,
     primaryColor: "#000000",
     radius: 0.5,
@@ -40,9 +32,14 @@ export function Playground() {
     if (config.gradient !== "animated") props.push(`  gradient="${config.gradient}"`);
     if (!config.allowClickOutside) props.push(`  allowClickOutside={false}`);
     
-    // Style prop generation
     const styleProps = [];
-    if (config.primaryColor !== "#000000") styleProps.push(`    '--primary': '${config.primaryColor}'`);
+    // Only add color prop if changed from default black
+    if (config.primaryColor !== "#000000") {
+      // We show the Hex here for user convenience, assuming they might handle conversion 
+      // or we can show the HSL. Let's show the HSL value for accuracy since that's what we pass.
+      const hsl = hexToHsl(config.primaryColor);
+      styleProps.push(`    '--primary': '${hsl}'`);
+    }
     if (config.radius !== 0.5) styleProps.push(`    '--radius': '${config.radius}rem'`);
 
     let styleString = "";
@@ -174,9 +171,8 @@ ${props.join("\n")}${styleString}
         }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '20px', color: '#374151' }}>Preview Area</h3>
           
-          {/* We mount the provider here with the current config */}
           <OnboardingProvider 
-            key={JSON.stringify(config)} // Force remount on config change
+            // Removed key={JSON.stringify(config)} to prevent remount flashing
             steps={playgroundSteps} 
             defaultOpen={false} 
           >
@@ -199,7 +195,7 @@ ${props.join("\n")}${styleString}
             </button>
           </div>
           <pre style={{ margin: 0, overflowX: 'auto' }}>
-            <code style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#e5e7eb', lineHeight: '1.5' }}>
+            <code style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#e5e7eb', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
               {generateCode()}
             </code>
           </pre>
@@ -210,7 +206,6 @@ ${props.join("\n")}${styleString}
   );
 }
 
-// Helper component to trigger the modal from inside the provider
 function LaunchButton() {
   const { resetOnboarding } = useOnboarding();
   return (
@@ -236,11 +231,13 @@ function LaunchButton() {
   );
 }
 
-// Wrapper to inject props
 function ModalWrapper({ config }: { config: any }) {
-  // Convert config to props
+  // Convert Hex to HSL for the CSS variable
+  const hsl = hexToHsl(config.primaryColor);
+
   const style = {
-    ...(config.primaryColor !== "#000000" ? { '--primary': config.primaryColor } : {}),
+    // Only set if not black (default)
+    ...(config.primaryColor !== "#000000" ? { '--primary': hsl } : {}),
     ...(config.radius !== 0.5 ? { '--radius': `${config.radius}rem` } : {}),
   } as React.CSSProperties;
 
