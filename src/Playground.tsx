@@ -25,7 +25,7 @@ const DEFAULT_CONFIG = {
 };
 
 export function Playground() {
-  const [activeTab, setActiveTab] = useState<"code" | "prompt">("prompt");
+  const [activeTab, setActiveTab] = useState<"code" | "prompt">("code");
   const [config, setConfig] = useState(DEFAULT_CONFIG);
 
   const generateCode = () => {
@@ -256,21 +256,6 @@ ${props.join("\n")}${styleString}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <div style={{ display: 'flex', gap: '16px' }}>
               <button 
-                onClick={() => setActiveTab("code")}
-                style={{ 
-                  background: 'none', 
-                  border: 'none', 
-                  color: activeTab === "code" ? 'white' : '#6b7280', 
-                  fontWeight: '700', 
-                  fontSize: '0.9rem', 
-                  cursor: 'pointer',
-                  borderBottom: activeTab === "code" ? '2px solid #6366f1' : '2px solid transparent',
-                  paddingBottom: '4px'
-                }}
-              >
-                REACT CODE
-              </button>
-              <button 
                 onClick={() => setActiveTab("prompt")}
                 style={{ 
                   background: 'none', 
@@ -287,6 +272,21 @@ ${props.join("\n")}${styleString}
                 }}
               >
                 <span>✨ AI PROMPT</span>
+              </button>
+              <button 
+                onClick={() => setActiveTab("code")}
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  color: activeTab === "code" ? 'white' : '#6b7280', 
+                  fontWeight: '700', 
+                  fontSize: '0.9rem', 
+                  cursor: 'pointer',
+                  borderBottom: activeTab === "code" ? '2px solid #6366f1' : '2px solid transparent',
+                  paddingBottom: '4px'
+                }}
+              >
+                REACT CODE
               </button>
             </div>
 
