@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { OnboardingProvider, OnboardingModal, useOnboarding, type OnboardingModalProps, type OnboardingTheme, type OnboardingStep } from "onstage";
+import { OnboardingProvider, OnboardingModal, useOnboarding, type OnboardingTheme, type OnboardingStep } from "onstage";
 import { hexToHsl } from "./utils/colors";
 
 const playgroundSteps: OnboardingStep[] = [
