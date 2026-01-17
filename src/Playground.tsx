@@ -17,23 +17,22 @@ const playgroundSteps: OnboardingStep[] = [
 
 export function Playground() {
   // --- State ---
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<{ 
+    theme: OnboardingTheme;
+    backdrop: "default" | "blur" | "transparent";
+    gradient: "animated" | "static" | "none";
+    allowClickOutside: boolean;
+    primaryColor: string;
+    radius: number;
+  }>({
     theme: "light",
-    backdrop: "default" | "blur" | "transparent",
-    gradient: "animated" | "static" | "none",
+    backdrop: "default",
+    gradient: "animated",
     allowClickOutside: true,
     primaryColor: "#000000",
     radius: 0.5,
   });
 
-  // --- Helpers ---
-  
-  // Convert Hex to HSL-ish string for CSS variable (Simplified for demo)
-  // Note: onstage uses HSL numbers (e.g. "222 47% 11%"). 
-  // For this demo, we'll just pass the Hex string to the variable which works in many browsers 
-  // or use a simpler inline style override if the library supports it.
-  // Actually, onstage style prop accepts CSSProperties, so standard colors work too.
-  
   const generateCode = () => {
     const props = [];
     if (config.theme !== "light") props.push(`  theme="${config.theme}"`);
@@ -50,7 +49,7 @@ export function Playground() {
     if (styleProps.length > 0) {
       styleString = `
   style={{
-${styleProps.join(",\n")}
+${styleProps.join(",\n")} 
   } as React.CSSProperties}`;
     }
 
@@ -174,14 +173,16 @@ ${props.join("\n")}${styleString}
           position: 'relative'
         }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '20px', color: '#374151' }}>Preview Area</h3>
-          <LaunchButton />
           
           {/* We mount the provider here with the current config */}
           <OnboardingProvider 
             key={JSON.stringify(config)} // Force remount on config change
             steps={playgroundSteps} 
             defaultOpen={false} 
-          > 
+          >
+            <div style={{marginBottom: '20px'}}>
+               <LaunchButton />
+            </div>
             <ModalWrapper config={config} />
           </OnboardingProvider>
         </div>
