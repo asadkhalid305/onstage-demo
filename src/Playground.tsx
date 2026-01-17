@@ -184,7 +184,16 @@ ${props.join("\n")}${styleString}
         </div>
 
         {/* Code Output */}
-        <div style={{ background: '#111827', borderRadius: '16px', padding: '24px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ 
+          background: '#111827', 
+          borderRadius: '16px', 
+          padding: '24px', 
+          position: 'relative', 
+          overflow: 'hidden',
+          minHeight: '220px', // Prevent layout shift
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <span style={{ color: '#9ca3af', fontSize: '0.8rem', fontWeight: '600', letterSpacing: '0.05em' }}>REACT CODE</span>
             <button 
@@ -194,7 +203,7 @@ ${props.join("\n")}${styleString}
               Copy
             </button>
           </div>
-          <pre style={{ margin: 0, overflowX: 'auto' }}>
+          <pre style={{ margin: 0, overflowX: 'auto', flex: 1 }}>
             <code style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#e5e7eb', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
               {generateCode()}
             </code>
