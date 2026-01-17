@@ -1,73 +1,45 @@
-# React + TypeScript + Vite
+# 🎭 Onstage Gallery
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the official demonstration playground for **Onstage**, a premium onboarding modal library for React.
 
-Currently, two official plugins are available:
+[**View Live Demo**](https://onstage-demo.vercel.app) *(Link to be updated after deployment)*
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Purpose
 
-## React Compiler
+The Gallery showcases the flexibility and themes provided by the `onstage` package. It serves as:
+1.  **A Playground:** Test different props (`theme`, `backdrop`, `allowClickOutside`) in real-time.
+2.  **A Reference:** View the code implementation for various scenarios.
+3.  **A Design Showcase:** Preview all 7 aesthetic presets (Glass, Midnight, Minimal, etc.).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Included Scenarios
 
-## Expanding the ESLint configuration
+- **Interaction Modes:** Compare "Strict" (Locked) vs. "Permissive" (Click Outside to Close) behavior.
+- **Backdrop Styles:** Preview "Blurred" vs. "Transparent" overlays.
+- **Aesthetic Themes:** Full gallery of all built-in themes.
+- **Responsive Logic:** Verified behavior for Mobile, Tablet, and Desktop aspect ratios.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📦 Running Locally
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1.  **Clone the repo:**
+    ```bash
+    git clone https://github.com/asadkhalid305/onstage-demo.git
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Start development server:**
+    ```bash
+    npm run dev
+    ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🏗️ Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **React 19**
+- **Vite**
+- **TypeScript**
+- **Tailwind CSS** (via the `onstage` styles)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📄 License
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+MIT © Asad Ullah Khalid
