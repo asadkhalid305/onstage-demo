@@ -1,22 +1,34 @@
-# 🎭 Onstage Gallery
+# 🎭 Onstage Gallery & Builder
 
-This is the official demonstration playground for **Onstage**, a premium onboarding modal library for React.
+This is the official playground for **Onstage**, the premium onboarding library for React. It features an interactive **Builder** to design your modal and a **Gallery** to explore preset themes.
 
 [**View Live Demo**](https://onstage-demo.vercel.app) *(Link to be updated after deployment)*
 
-## 🚀 Purpose
+## 🛠️ The Builder (Playground)
 
-The Gallery showcases the flexibility and themes provided by the `onstage` package. It serves as:
-1.  **A Playground:** Test different props (`theme`, `backdrop`, `allowClickOutside`) in real-time.
-2.  **A Reference:** View the code implementation for various scenarios.
-3.  **A Design Showcase:** Preview all 7 aesthetic presets (Glass, Midnight, Minimal, etc.).
+The Builder lets you customize the onboarding modal in real-time and export the code directly to your project.
 
-## 🛠️ Included Scenarios
+### What you can do:
+- **Change Themes:** Toggle between 7 presets (Glass, Midnight, Minimal, etc.) instantly.
+- **Adjust Backdrop:** Test different overlays (Blurred, Transparent, Dark).
+- **Tweak Gradients:** Switch between animated, static, or no gradients.
+- **Customize Colors:** Pick any brand color (Hex) and see it apply via CSS variables.
+- **Corner Radius:** Slide to adjust border radius from square (0rem) to super-rounded (2rem).
+- **Export Code:** The "React Code" block updates instantly. Just click **Copy** and paste it into your app.
 
-- **Interaction Modes:** Compare "Strict" (Locked) vs. "Permissive" (Click Outside to Close) behavior.
-- **Backdrop Styles:** Preview "Blurred" vs. "Transparent" overlays.
-- **Aesthetic Themes:** Full gallery of all built-in themes.
-- **Responsive Logic:** Verified behavior for Mobile, Tablet, and Desktop aspect ratios.
+## 🖼️ The Gallery
+
+A visual showcase of the library's capabilities across different scenarios.
+
+### Included Scenarios:
+1.  **Interaction Modes:**
+    *   **Permissive:** User can click outside or press ESC to close.
+    *   **Strict:** Locked mode (user must complete or skip).
+2.  **Backdrop Styles:**
+    *   **Blurred:** Frosted glass effect.
+    *   **Transparent:** Seamless integration with your UI.
+3.  **Aesthetic Themes:**
+    *   Preview all built-in themes: **Dark**, **Glass**, **Midnight**, **Minimal**, **Ocean**, **Sunset**.
 
 ## 📦 Running Locally
 
@@ -38,7 +50,7 @@ The Gallery showcases the flexibility and themes provided by the `onstage` packa
 - **React 19**
 - **Vite**
 - **TypeScript**
-- **Tailwind CSS** (via the `onstage` styles)
+- **Onstage** (The library being demoed)
 
 ## 📄 License
 
