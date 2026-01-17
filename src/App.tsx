@@ -131,14 +131,18 @@ function App() {
       
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h1 style={{ 
-            fontSize: '3rem', 
-            fontWeight: '800', 
-            marginBottom: '10px', 
-            color: 'black',
-          }}>
-            Onstage
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '10px' }}>
+            <img src="/logo.svg" alt="Onstage Logo" style={{ width: '48px', height: '48px' }} />
+            <h1 style={{ 
+              fontSize: '3rem', 
+              fontWeight: '800', 
+              color: 'black',
+              letterSpacing: '-0.03em',
+              margin: 0
+            }}>
+              Onstage
+            </h1>
+          </div>
           <p style={{ 
             fontSize: '1.2rem', 
             color: '#666', 
