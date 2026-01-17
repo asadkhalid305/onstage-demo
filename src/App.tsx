@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { OnboardingProvider, OnboardingModal, type OnboardingStep, type OnboardingModalProps } from "onstage";
+import { Playground } from "./Playground";
 
 // --- Data & Configurations ---
 
@@ -117,9 +118,8 @@ const scenarios: Scenario[] = [
 ];
 
 function App() {
-  const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
-  const activeScenario = scenarios.find(s => s.id === activeScenarioId);
-
+  const [activeTab, setActiveTab] = useState<"gallery" | "playground">("playground");
+  
   return (
     <div style={{ 
       minHeight: '100vh', 
@@ -129,7 +129,7 @@ function App() {
       boxSizing: 'border-box',
     }}>
       
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <h1 style={{ 
             fontSize: '3rem', 
@@ -137,16 +137,67 @@ function App() {
             marginBottom: '10px', 
             color: 'black',
           }}>
-            Onstage Gallery
+            Onstage
           </h1>
           <p style={{ 
             fontSize: '1.2rem', 
             color: '#666', 
+            marginBottom: '30px'
           }}>
-            Experience different interaction modes, backdrops, and themes.
+            The premium, plug-and-play onboarding wizard for React.
           </p>
+
+          {/* Tab Navigation */}
+          <div style={{ display: 'inline-flex', background: '#e5e7eb', padding: '4px', borderRadius: '12px' }}>
+            <button
+              onClick={() => setActiveTab("playground")}
+              style={{
+                padding: '10px 24px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeTab === "playground" ? 'white' : 'transparent',
+                color: activeTab === "playground" ? 'black' : '#666',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: activeTab === "playground" ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
+                transition: 'all 0.2s'
+              }}
+            >
+              Builder
+            </button>
+            <button
+              onClick={() => setActiveTab("gallery")}
+              style={{
+                padding: '10px 24px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeTab === "gallery" ? 'white' : 'transparent',
+                color: activeTab === "gallery" ? 'black' : '#666',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: activeTab === "gallery" ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
+                transition: 'all 0.2s'
+              }}
+            >
+              Gallery
+            </button>
+          </div>
         </div>
 
+        {activeTab === "playground" ? <Playground /> : <Gallery />}
+        
+      </div>
+    </div>
+  );
+}
+
+function Gallery() {
+  const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
+  const activeScenario = scenarios.find(s => s.id === activeScenarioId);
+
+  return (
+    <>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Interaction Modes Section */}
         <Section title="1. Interaction Modes" />
         <Grid>
@@ -196,7 +247,7 @@ function App() {
           </OnboardingProvider>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
