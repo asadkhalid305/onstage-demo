@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { OnboardingProvider, OnboardingModal, useOnboarding, type OnboardingModalProps, type OnboardingTheme, type OnboardingStep } from "onstage";
+import { useState } from "react";
+import { OnboardingProvider, OnboardingModal, useOnboarding, type OnboardingTheme, type OnboardingStep } from "onstage";
 import { hexToHsl } from "./utils/colors";
 
 const playgroundSteps: OnboardingStep[] = [
@@ -22,20 +22,11 @@ const DEFAULT_CONFIG = {
   allowClickOutside: true,
   primaryColor: "#6366f1",
   radius: 0.5,
-  device: "desktop" as "desktop" | "tablet" | "mobile",
 };
 
 export function Playground() {
   const [activeTab, setActiveTab] = useState<"code" | "prompt">("code");
   const [config, setConfig] = useState(DEFAULT_CONFIG);
-  
-  // Container for the portal
-  const [container, setContainer] = useState<HTMLElement | null>(null);
-  const containerRef = useCallback((node: HTMLElement | null) => {
-    if (node !== null) {
-      setContainer(node);
-    }
-  }, []);
 
   const generateCode = () => {
     const props = [];
@@ -114,42 +105,22 @@ ${props.join("\n")}${styleString}
           <h2 style={{ fontSize: '1.25rem', fontWeight: '700', margin: 0 }}>Configurator</h2>
           <button 
             onClick={handleReset}
-            style={{ fontSize: '0.8rem', color: '#6366f1', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600' }}
+            style={{ 
+              fontSize: '0.8rem', 
+              color: '#6366f1', 
+              background: 'white', 
+              border: '1px solid #6366f1', 
+              cursor: 'pointer', 
+              fontWeight: '600',
+              padding: '6px 16px',
+              borderRadius: '8px',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+            }}
           >
-            Reset
+            Reset to Defaults
           </button>
         </div>
         
-        {/* Device Simulator */}
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', fontSize: '0.9rem' }}>Preview Device</label>
-          <div style={{ display: 'flex', background: '#f3f4f6', padding: '4px', borderRadius: '8px' }}>
-            {['desktop', 'tablet', 'mobile'].map((d) => (
-              <button
-                key={d}
-                onClick={() => setConfig(prev => ({ ...prev, device: d as any }))}
-                style={{
-                  flex: 1,
-                  padding: '6px',
-                  border: 'none',
-                  background: config.device === d ? 'white' : 'transparent',
-                  borderRadius: '6px',
-                  fontSize: '0.8rem',
-                  fontWeight: '600',
-                  color: config.device === d ? 'black' : '#6b7280',
-                  cursor: 'pointer',
-                  boxShadow: config.device === d ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
-                  textTransform: 'capitalize'
-                }}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <hr style={{ margin: '20px 0', border: 'none', borderTop: '1px solid #e5e7eb' }} />
-
         {/* Theme */}
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', fontSize: '0.9rem' }}>Theme</label>
@@ -159,7 +130,7 @@ ${props.join("\n")}${styleString}
             style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db' }}
           >
             <option value="light">Light</option>
-            <option value="dark">Dark (Default)</option>
+            <option value="dark">Dark (Standard)</option>
             <option value="glass">Glass</option>
             <option value="midnight">Midnight</option>
             <option value="minimal">Minimal</option>
@@ -176,8 +147,8 @@ ${props.join("\n")}${styleString}
             onChange={(e) => setConfig(prev => ({ ...prev, backdrop: e.target.value as any }))}
             style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db' }}
           >
-            <option value="default">Default (Dark)</option>
-            <option value="blur">Blur</option>
+            <option value="blur">Blur (Default in Playground)</option>
+            <option value="default">Dark (Standard)</option>
             <option value="transparent">Transparent</option>
           </select>
         </div>
@@ -260,28 +231,15 @@ ${props.join("\n")}${styleString}
         }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '20px', color: '#374151' }}>Preview Area</h3>
           
-          {/* Device Simulator Container */}
-          <div style={{ 
-            width: config.device === 'mobile' ? '375px' : config.device === 'tablet' ? '768px' : '100%',
-            height: '100%',
-            transition: 'width 0.3s ease',
-            position: 'relative',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            // Add a border/shadow to visualize the device boundaries if not desktop
-            ...(config.device !== 'desktop' ? { border: '2px solid #e5e7eb', borderRadius: '12px', background: 'white', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' } : {})
-          }}>
-            <OnboardingProvider 
-              steps={playgroundSteps} 
-              defaultOpen={false} 
-            > 
-              <div style={{marginBottom: '20px'}}>
-                 <LaunchButton />
-              </div>
-              <ModalWrapper config={config} />
-            </OnboardingProvider>
-          </div>
+          <OnboardingProvider 
+            steps={playgroundSteps} 
+            defaultOpen={false} 
+          >
+            <div style={{ marginBottom: '20px' }}>
+               <LaunchButton />
+            </div>
+            <ModalWrapper config={config} />
+          </OnboardingProvider>
         </div>
 
         {/* Output Tabs */}
@@ -377,13 +335,9 @@ function LaunchButton() {
   );
 }
 
-// Wrapper to inject props
 function ModalWrapper({ config }: { config: any }) {
   const hsl = hexToHsl(config.primaryColor);
   
-  // Calculate contrasting foreground color
-  // Simple heuristic: if color is dark, text is white. If color is light, text is black.
-  // Converting hex to RGB for brightness calculation
   const r = parseInt(config.primaryColor.substr(1, 2), 16);
   const g = parseInt(config.primaryColor.substr(3, 2), 16);
   const b = parseInt(config.primaryColor.substr(5, 2), 16);
