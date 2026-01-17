@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { OnboardingProvider, OnboardingModal, useOnboarding, type OnboardingModalProps, type OnboardingTheme, type OnboardingStep } from "onstage";
 import { hexToHsl } from "./utils/colors";
 
@@ -20,7 +20,7 @@ const DEFAULT_CONFIG = {
   backdrop: "blur" as "default" | "blur" | "transparent",
   gradient: "animated" as "animated" | "static" | "none",
   allowClickOutside: true,
-  primaryColor: "#6366f1", // Indigo default (visible in dark mode)
+  primaryColor: "#6366f1",
   radius: 0.5,
   device: "desktop" as "desktop" | "tablet" | "mobile",
 };
@@ -28,6 +28,14 @@ const DEFAULT_CONFIG = {
 export function Playground() {
   const [activeTab, setActiveTab] = useState<"code" | "prompt">("code");
   const [config, setConfig] = useState(DEFAULT_CONFIG);
+  
+  // Container for the portal
+  const [container, setContainer] = useState<HTMLElement | null>(null);
+  const containerRef = useCallback((node: HTMLElement | null) => {
+    if (node !== null) {
+      setContainer(node);
+    }
+  }, []);
 
   const generateCode = () => {
     const props = [];
@@ -40,8 +48,6 @@ export function Playground() {
     if (config.primaryColor !== DEFAULT_CONFIG.primaryColor) {
       const hsl = hexToHsl(config.primaryColor);
       styleProps.push(`    '--primary': '${hsl}'`);
-      // We assume user handles foreground contrast in real code, or we could export it.
-      // For the prompt, we'll mention it.
     }
     if (config.radius !== 0.5) styleProps.push(`    '--radius': '${config.radius}rem'`);
 
@@ -250,12 +256,12 @@ ${props.join("\n")}${styleString}
           justifyContent: 'center',
           padding: '40px',
           position: 'relative',
-          overflow: 'hidden' // Contain the simulated device
+          overflow: 'hidden' 
         }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '20px', color: '#374151' }}>Preview Area</h3>
           
           {/* Device Simulator Container */}
-          <div style={{
+          <div style={{ 
             width: config.device === 'mobile' ? '375px' : config.device === 'tablet' ? '768px' : '100%',
             height: '100%',
             transition: 'width 0.3s ease',
@@ -269,7 +275,7 @@ ${props.join("\n")}${styleString}
             <OnboardingProvider 
               steps={playgroundSteps} 
               defaultOpen={false} 
-            >
+            > 
               <div style={{marginBottom: '20px'}}>
                  <LaunchButton />
               </div>
