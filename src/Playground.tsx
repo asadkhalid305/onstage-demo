@@ -117,7 +117,7 @@ ${props.join("\n")}${styleString}
               textUnderlineOffset: '4px'
             }}
           >
-            Reset to Defaults
+            Reset
           </button>
         </div>
         
