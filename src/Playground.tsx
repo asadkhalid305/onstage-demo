@@ -106,15 +106,15 @@ ${props.join("\n")}${styleString}
           <button 
             onClick={handleReset}
             style={{ 
-              fontSize: '0.8rem', 
-              color: '#6366f1', 
-              background: 'white', 
-              border: '1px solid #6366f1', 
+              fontSize: '0.9rem', 
+              color: '#374151', 
+              background: 'none', 
+              border: 'none', 
               cursor: 'pointer', 
               fontWeight: '600',
-              padding: '6px 16px',
-              borderRadius: '8px',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+              padding: 0,
+              textDecoration: 'underline',
+              textUnderlineOffset: '4px'
             }}
           >
             Reset to Defaults
