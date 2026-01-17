@@ -1,8 +1,11 @@
 # 🎭 Onstage Gallery & Builder
 
-This is the official playground for **Onstage**, the premium onboarding library for React. It features an interactive **Builder** to design your modal and a **Gallery** to explore preset themes.
+This is the official playground for **Onstage**, the premium onboarding modal library for React. It features an interactive **Builder** to design your modal and a **Gallery** to explore preset themes.
 
-[**View Live Demo**](https://onstage-demo.vercel.app) *(Link to be updated after deployment)*
+![Onstage Demo](./demo.gif)
+
+> **[📦 Get the NPM Package](https://github.com/asadkhalid305/onstage)**  
+> View the source code, installation guide, and full API documentation.
 
 ## 🛠️ The Builder (Playground)
 
