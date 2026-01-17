@@ -57,6 +57,8 @@ ${props.join("\n")}${styleString}
     const parts = [
       "I want to add a professional onboarding wizard to my React app using the 'onstage' library.",
       "",
+      "Please refer to the official documentation for full API details: https://github.com/asadkhalid305/onstage",
+      "",
       "1. Install the package: `npm install onstage`",
       "2. Import the styles in my root file (App.tsx or main.tsx): `import 'onstage/styles.css'`",
       "3. Implement the onboarding flow with these specific settings:",
