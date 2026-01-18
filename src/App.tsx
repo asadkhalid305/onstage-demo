@@ -122,78 +122,94 @@ function App() {
   
   return (
     <div style={{ 
-      minHeight: '100vh', 
+      height: '100vh', 
+      display: 'flex',
+      flexDirection: 'column',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       background: '#f8f9fa',
-      padding: '40px 20px',
-      boxSizing: 'border-box',
+      overflow: 'hidden'
     }}>
       
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '8px' }}>
-            <img src="/logo.svg" alt="Onstage Logo" style={{ width: '56px', height: '56px' }} />
-            <h1 style={{ 
-              fontSize: '3.5rem', 
-              fontWeight: '900', 
-              color: 'black',
-              letterSpacing: '-0.04em',
-              margin: 0,
-              background: 'linear-gradient(to bottom right, #000, #444)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
-            }}>
-              Onstage
-            </h1>
-          </div>
-          <p style={{ 
-            fontSize: '1.2rem', 
-            color: '#666', 
-            marginBottom: '30px'
+      {/* Compact Header */}
+      <header style={{ 
+        height: '64px',
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        padding: '0 24px',
+        background: 'white',
+        borderBottom: '1px solid #e5e7eb',
+        flexShrink: 0,
+        zIndex: 10
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <img src="/logo.svg" alt="Onstage Logo" style={{ width: '32px', height: '32px' }} />
+          <h1 style={{ 
+            fontSize: '1.25rem', 
+            fontWeight: '800', 
+            color: 'black',
+            letterSpacing: '-0.02em',
+            margin: 0
           }}>
-            The premium, plug-and-play onboarding wizard for React.
-          </p>
-
-          {/* Tab Navigation */}
-          <div style={{ display: 'inline-flex', background: '#e5e7eb', padding: '4px', borderRadius: '12px' }}>
-            <button
-              onClick={() => setActiveTab("playground")}
-              style={{
-                padding: '10px 24px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeTab === "playground" ? 'white' : 'transparent',
-                color: activeTab === "playground" ? 'black' : '#666',
-                fontWeight: '600',
-                cursor: 'pointer',
-                boxShadow: activeTab === "playground" ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
-                transition: 'all 0.2s'
-              }}
-            >
-              Builder
-            </button>
-            <button
-              onClick={() => setActiveTab("gallery")}
-              style={{
-                padding: '10px 24px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeTab === "gallery" ? 'white' : 'transparent',
-                color: activeTab === "gallery" ? 'black' : '#666',
-                fontWeight: '600',
-                cursor: 'pointer',
-                boxShadow: activeTab === "gallery" ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
-                transition: 'all 0.2s'
-              }}
-            >
-              Gallery
-            </button>
-          </div>
+            Onstage
+          </h1>
         </div>
 
-        {activeTab === "playground" ? <Playground /> : <Gallery />}
-        
-      </div>
+        {/* Tab Navigation */}
+        <div style={{ display: 'flex', background: '#f3f4f6', padding: '4px', borderRadius: '10px' }}>
+          <button
+            onClick={() => setActiveTab("playground")}
+            style={{
+              padding: '6px 16px',
+              borderRadius: '8px',
+              border: 'none',
+              background: activeTab === "playground" ? 'white' : 'transparent',
+              color: activeTab === "playground" ? 'black' : '#666',
+              fontWeight: '600',
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              boxShadow: activeTab === "playground" ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+              transition: 'all 0.2s'
+            }}
+          >
+            Builder
+          </button>
+          <button
+            onClick={() => setActiveTab("gallery")}
+            style={{
+              padding: '6px 16px',
+              borderRadius: '8px',
+              border: 'none',
+              background: activeTab === "gallery" ? 'white' : 'transparent',
+              color: activeTab === "gallery" ? 'black' : '#666',
+              fontWeight: '600',
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              boxShadow: activeTab === "gallery" ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+              transition: 'all 0.2s'
+            }}
+          >
+            Gallery
+          </button>
+        </div>
+      </header>
+
+      {/* Content Area */}
+      <main style={{ 
+        flex: 1, 
+        overflow: 'hidden', 
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        {activeTab === "playground" ? (
+           <div style={{ flex: 1, padding: '24px', overflow: 'hidden' }}>
+             <Playground />
+           </div>
+        ) : (
+          <Gallery />
+        )}
+      </main>
     </div>
   );
 }
@@ -203,8 +219,23 @@ function Gallery() {
   const activeScenario = scenarios.find(s => s.id === activeScenarioId);
 
   return (
-    <>
+    <div style={{ 
+      height: '100%', 
+      overflowY: 'auto', 
+      padding: '40px 24px',
+      boxSizing: 'border-box'
+    }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <p style={{ 
+          fontSize: '1.1rem', 
+          color: '#666', 
+          marginBottom: '30px', 
+          maxWidth: '600px',
+          lineHeight: '1.6'
+        }}>
+          Explore a collection of pre-configured interactions and themes. Click any card to launch the onboarding experience.
+        </p>
+
         {/* Interaction Modes Section */}
         <Section title="1. Interaction Modes" />
         <Grid>
@@ -254,7 +285,7 @@ function Gallery() {
           </OnboardingProvider>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

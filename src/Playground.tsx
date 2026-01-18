@@ -11,8 +11,7 @@ export function Playground() {
     <div style={{ 
       display: 'grid', 
       gridTemplateColumns: '320px 1fr', 
-      height: 'calc(100vh - 320px)', // Adjust based on header height 
-      minHeight: '500px',
+      height: '100%',
       background: 'white',
       borderRadius: '24px',
       overflow: 'hidden',
