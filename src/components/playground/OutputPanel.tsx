@@ -71,8 +71,11 @@ ${props.join("\n")}${styleString}
       "2. Import the styles in my root file (App.tsx or main.tsx): `import 'onstage/styles.css'`",
       "3. Implement the onboarding flow with these specific settings:",
       "",
-      `- Theme: Use the "${config.theme}" preset.`, 
     ];
+
+    if (config.theme !== "light") {
+      parts.push(`- Theme: Use the "${config.theme}" preset.`);
+    }
 
     if (config.backdrop !== "default") {
       parts.push(`- Backdrop: Set it to "${config.backdrop}".`);

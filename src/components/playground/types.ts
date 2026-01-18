@@ -10,8 +10,8 @@ export interface PlaygroundConfig {
 }
 
 export const DEFAULT_CONFIG: PlaygroundConfig = {
-  theme: "dark",
-  backdrop: "blur",
+  theme: "light",
+  backdrop: "default",
   gradient: "animated",
   allowClickOutside: true,
   primaryColor: "#6366f1",

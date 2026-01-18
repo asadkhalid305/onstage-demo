@@ -46,8 +46,8 @@ export function Configurator({ config, setConfig }: ConfiguratorProps) {
           onChange={(e) => setConfig(prev => ({ ...prev, theme: e.target.value as OnboardingTheme }))}
           style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db' }}
         >
-          <option value="light">Light</option>
-          <option value="dark">Dark (Standard)</option>
+          <option value="light">Light (Default)</option>
+          <option value="dark">Dark</option>
           <option value="glass">Glass</option>
           <option value="midnight">Midnight</option>
           <option value="minimal">Minimal</option>
@@ -64,8 +64,8 @@ export function Configurator({ config, setConfig }: ConfiguratorProps) {
           onChange={(e) => setConfig(prev => ({ ...prev, backdrop: e.target.value as any }))}
           style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db' }}
         >
-          <option value="blur">Blur (Default)</option>
-          <option value="default">Dark (Standard)</option>
+          <option value="default">Dark (Default)</option>
+          <option value="blur">Blur</option>
           <option value="transparent">Transparent</option>
         </select>
       </div>
