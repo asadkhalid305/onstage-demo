@@ -1,32 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { OnboardingProvider, OnboardingModal, useOnboarding, type OnboardingStep } from "onstage";
 import { hexToHsl } from "../../utils/colors";
 import { type PlaygroundConfig, DEFAULT_CONFIG } from "./types";
-
-const playgroundSteps: OnboardingStep[] = [
-  {
-    title: "Design Your Experience",
-    description: "Use the controls to **customize** this modal in real-time.",
-    image: "https://placehold.co/1000x562/3b82f6/fff?text=Playground+Preview",
-  },
-  {
-    title: "Copy & Paste",
-    description: "When you are happy with the look, **copy the code** below!",
-    image: "https://placehold.co/1000x562/10b981/fff?text=Ready+to+Ship",
-  },
-  {
-      title: "All Done",
-      description: "You are ready to go!",
-      image: "https://placehold.co/1000x562/6366f1/fff?text=Done",
-  }
-];
 
 interface OutputPanelProps {
   config: PlaygroundConfig;
 }
 
+const getPlaygroundSteps = (config: PlaygroundConfig): OnboardingStep[] => [
+  {
+    title: "Welcome to Onstage",
+    description: `You are currently previewing the **${config.theme}** theme with a **${config.primaryColor}** primary color.`,
+    image: {
+      mobile: `https://placehold.co/400x500/${config.primaryColor.substring(1)}/fff?text=Welcome+to+Onstage+Modal`,
+      tablet: `https://placehold.co/800x600/${config.primaryColor.substring(1)}/fff?text=Welcome+to+Onstage+Modal`,
+      desktop: `https://placehold.co/1000x562/${config.primaryColor.substring(1)}/fff?text=Welcome+to+Onstage+Modal`,
+    }
+  },
+  {
+    title: "Responsive Design",
+    description: `The **${config.theme}** layout adapts automatically. Try resizing your browser to see the mobile, tablet, and desktop image variants!`,
+    image: {
+      mobile: `https://placehold.co/400x500/1e293b/fff?text=Mobile+Portrait+(4:5)`,
+      tablet: `https://placehold.co/800x600/4f46e5/fff?text=Tablet+View+(4:3)`,
+      desktop: `https://placehold.co/1000x562/${config.primaryColor.substring(1)}/fff?text=Desktop+Landscape+(16:9)`
+    }
+  }
+];
+
 export function OutputPanel({ config }: OutputPanelProps) {
   const [activeTab, setActiveTab] = useState<"code" | "prompt">("prompt");
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const playgroundSteps = useMemo(() => getPlaygroundSteps(config), [config]);
+  const isDarkMode = config.theme === "dark" || config.theme === "glass" || config.theme === "midnight";
 
   const generateCode = () => {
     const props = [];
@@ -95,109 +101,115 @@ ${props.join("\n")}${styleString}
   };
 
   return (
-    <OnboardingProvider steps={playgroundSteps} defaultOpen={false}>
+    <div style={{ 
+      background: '#111827', 
+      display: 'flex',
+      flexDirection: 'column',
+      flex: 1,
+      minHeight: 0, // Important for nested flex scroll
+      overflow: 'hidden',
+      position: 'relative' // Ensure relative positioning for contained elements
+    }}>
       <div style={{ 
-        background: '#111827', 
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-        minHeight: 0, // Important for nested flex scroll
-        overflow: 'hidden',
-        position: 'relative' // Ensure relative positioning for contained elements
+        display: 'grid',
+        gridTemplateColumns: '1fr auto 1fr',
+        alignItems: 'center',
+        padding: '16px 24px',
+        borderBottom: '1px solid #374151',
+        background: '#1f2937'
       }}>
-        <div style={{ 
-          display: 'grid',
-          gridTemplateColumns: '1fr auto 1fr',
-          alignItems: 'center',
-          padding: '16px 24px',
-          borderBottom: '1px solid #374151',
-          background: '#1f2937'
-        }}>
-          {/* Left: Tabs */}
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <button 
-              onClick={() => setActiveTab("prompt")}
-              style={{ 
-                background: 'none', 
-                border: 'none', 
-                color: activeTab === "prompt" ? 'white' : '#9ca3af', 
-                fontWeight: '700', 
-                fontSize: '0.9rem', 
-                cursor: 'pointer',
-                borderBottom: activeTab === "prompt" ? '2px solid #a855f7' : '2px solid transparent',
-                paddingBottom: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-            >
-              <span>✨ AI PROMPT</span>
-            </button>
-            <button 
-              onClick={() => setActiveTab("code")}
-              style={{ 
-                background: 'none', 
-                border: 'none', 
-                color: activeTab === "code" ? 'white' : '#9ca3af', 
-                fontWeight: '700', 
-                fontSize: '0.9rem', 
-                cursor: 'pointer',
-                borderBottom: activeTab === "code" ? '2px solid #6366f1' : '2px solid transparent',
-                paddingBottom: '4px'
-              }}
-            >
-              REACT CODE
-            </button>
-          </div>
-
-          {/* Center: Launch Button */}
-          <LaunchButton />
-
-          {/* Right: Copy Button */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button 
-              onClick={() => navigator.clipboard.writeText(activeTab === "code" ? generateCode() : generatePrompt())}
-              style={{ 
-                background: 'rgba(255,255,255,0.1)', 
-                color: 'white', 
-                border: 'none', 
-                padding: '6px 12px', 
-                borderRadius: '6px', 
-                fontSize: '0.8rem', 
-                cursor: 'pointer',
-                transition: 'background 0.2s'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-            >
-              Copy
-            </button>
-          </div>
+        {/* Left: Tabs */}
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <button 
+            onClick={() => setActiveTab("prompt")}
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: activeTab === "prompt" ? 'white' : '#9ca3af', 
+              fontWeight: '700', 
+              fontSize: '0.9rem', 
+              cursor: 'pointer',
+              borderBottom: activeTab === "prompt" ? '2px solid #a855f7' : '2px solid transparent',
+              paddingBottom: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <span>✨ AI PROMPT</span>
+          </button>
+          <button 
+            onClick={() => setActiveTab("code")}
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: activeTab === "code" ? 'white' : '#9ca3af', 
+              fontWeight: '700', 
+              fontSize: '0.9rem', 
+              cursor: 'pointer',
+              borderBottom: activeTab === "code" ? '2px solid #6366f1' : '2px solid transparent',
+              paddingBottom: '4px'
+            }}
+          >
+            REACT CODE
+          </button>
         </div>
 
-        <div style={{ 
-          padding: '24px', 
-          overflowY: 'auto',
-          flex: 1
-        }}>
-          <pre style={{ margin: 0 }}>
-            <code style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#e5e7eb', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
-              {activeTab === "code" ? generateCode() : generatePrompt()}
-            </code>
-          </pre>
-        </div>
+        {/* Center: Launch Button */}
+        <LaunchButton onLaunch={() => setIsPreviewOpen(true)} />
 
-        <ModalWrapper config={config} />
+        {/* Right: Copy Button */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button 
+            onClick={() => navigator.clipboard.writeText(activeTab === "code" ? generateCode() : generatePrompt())}
+            style={{ 
+              background: 'rgba(255,255,255,0.1)', 
+              color: 'white', 
+              border: 'none', 
+              padding: '6px 12px', 
+              borderRadius: '6px', 
+              fontSize: '0.8rem', 
+              cursor: 'pointer',
+              transition: 'background 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+          >
+            Copy
+          </button>
+        </div>
       </div>
-    </OnboardingProvider>
+
+      <div style={{ 
+        padding: '24px', 
+        overflowY: 'auto',
+        flex: 1
+      }}>
+        <pre style={{ margin: 0 }}>
+          <code style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#e5e7eb', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
+            {activeTab === "code" ? generateCode() : generatePrompt()}
+          </code>
+        </pre>
+      </div>
+
+      {isPreviewOpen && (
+        <OnboardingProvider 
+          steps={playgroundSteps} 
+          defaultOpen={true}
+          onFinish={() => setIsPreviewOpen(false)}
+          onSkip={() => setIsPreviewOpen(false)}
+        >
+          <ModalWrapper config={config} />
+        </OnboardingProvider>
+      )}
+    </div>
   );
 }
 
-function LaunchButton() {
-  const { resetOnboarding } = useOnboarding();
+function LaunchButton({ onLaunch }: { onLaunch: () => void }) {
   return (
     <button 
-      onClick={resetOnboarding}
+      onClick={onLaunch}
       style={{
         padding: '8px 16px',
         fontSize: '0.9rem',
