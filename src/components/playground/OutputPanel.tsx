@@ -34,6 +34,19 @@ export function OutputPanel({ config }: OutputPanelProps) {
   const playgroundSteps = useMemo(() => getPlaygroundSteps(config), [config]);
   const isDarkMode = config.theme === "dark" || config.theme === "glass" || config.theme === "midnight";
 
+  // Package defaults per theme
+  const THEME_DEFAULTS: Record<string, string> = {
+    light: "#171717",
+    dark: "#8249df",
+    glass: "#ffffff",
+    midnight: "#7c3aed",
+    ocean: "#0ea5e9",
+    sunset: "#f97316",
+    minimal: "#000000"
+  };
+
+  const isPrimaryDefault = config.primaryColor.toLowerCase() === THEME_DEFAULTS[config.theme]?.toLowerCase();
+
   const generateCode = () => {
     const props = [];
     if (config.theme !== "light") props.push(`  theme="${config.theme}"`);
@@ -42,36 +55,80 @@ export function OutputPanel({ config }: OutputPanelProps) {
     if (!config.allowClickOutside) props.push(`  allowClickOutside={false}`);
     
     const styleProps = [];
-    if (config.primaryColor !== DEFAULT_CONFIG.primaryColor) {
-      const hsl = hexToHsl(config.primaryColor);
+    const hsl = hexToHsl(config.primaryColor);
+    
+    if (!isPrimaryDefault) {
       styleProps.push(`    '--primary': '${hsl}'`);
+      const r = parseInt(config.primaryColor.substr(1, 2), 16);
+      const g = parseInt(config.primaryColor.substr(3, 2), 16);
+      const b = parseInt(config.primaryColor.substr(5, 2), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      const foregroundHsl = brightness > 128 ? '0 0% 0%' : '0 0% 100%';
+      styleProps.push(`    '--primary-foreground': '${foregroundHsl}'`);
     }
+
     if (config.radius !== 0.5) styleProps.push(`    '--radius': '${config.radius}rem'`);
 
     let styleString = "";
     if (styleProps.length > 0) {
-      styleString = `
-  style={{
+      styleString = `\n  style={{
 ${styleProps.join(",\n")} 
   } as React.CSSProperties}`;
     }
 
-    return `<OnboardingModal
-${props.join("\n")}${styleString}
-/>`;
+    const modalTag = `<OnboardingModal${props.length > 0 ? `\n${props.join("\n")}` : ""}${styleString}${props.length > 0 || styleProps.length > 0 ? "\n/>" : " />"}`;
+
+    return `import { OnboardingProvider, OnboardingModal } from "onstage";
+import "onstage/styles.css";
+
+const steps = [
+  {
+    title: "Welcome! 👋",
+    description: "This is your first step.",
+    image: "https://your-image-url.com/welcome.png"
+  },
+  // Add more steps here...
+];
+
+export default function App() {
+  return (
+    <OnboardingProvider steps={steps} defaultOpen={true}>
+      <YourApp />
+      ${modalTag}
+    </OnboardingProvider>
+  );
+}`;
   };
 
   const generatePrompt = () => {
+    const hasCustomSettings = 
+      config.theme !== "light" || 
+      config.backdrop !== "default" || 
+      config.gradient !== "animated" || 
+      !config.allowClickOutside || 
+      !isPrimaryDefault || 
+      config.radius !== 0.5;
+
+    const setupInstructions = [
+      "1. Install the package: `npm install onstage`",
+      "2. Import the styles in my root file (App.tsx or main.tsx): `import 'onstage/styles.css'`",
+      hasCustomSettings 
+        ? "3. Implement the onboarding flow with these specific settings:"
+        : "3. Implement the onboarding flow using the default settings from the package.",
+    ];
+
     const parts = [
       "I want to add a professional onboarding wizard to my React app using the 'onstage' library.",
       "",
       "Please refer to the official documentation for full API details: https://github.com/asadkhalid305/onstage",
       "",
-      "1. Install the package: `npm install onstage`",
-      "2. Import the styles in my root file (App.tsx or main.tsx): `import 'onstage/styles.css'`",
-      "3. Implement the onboarding flow with these specific settings:",
+      ...setupInstructions,
       "",
     ];
+
+    if (!hasCustomSettings) {
+      parts.push("To implement this, wrap your main application component with the `OnboardingProvider` and place the `OnboardingModal` inside it. Use the `steps` array discussed below.");
+    }
 
     if (config.theme !== "light") {
       parts.push(`- Theme: Use the "${config.theme}" preset.`);
@@ -89,7 +146,7 @@ ${props.join("\n")}${styleString}
       parts.push("- Interaction: Enable Strict Mode (disable clicking outside to close).");
     }
 
-    if (config.primaryColor !== DEFAULT_CONFIG.primaryColor) {
+    if (!isPrimaryDefault) {
       parts.push(`- Brand Color: Override the primary color to HSL "${hexToHsl(config.primaryColor)}". Ensure high contrast foreground text.`);
     }
 
@@ -98,7 +155,25 @@ ${props.join("\n")}${styleString}
     }
 
     parts.push("");
-    parts.push("Please set up the provider and modal with these props.");
+    parts.push("### Step Structure Example:");
+    parts.push("The `steps` array should follow this structure (including responsive images if needed):");
+    parts.push("```typescript");
+    parts.push("const steps = [");
+    parts.push("  {");
+    parts.push("    title: 'Welcome!',");
+    parts.push("    description: 'A beautiful description.',");
+    parts.push("    image: { mobile: '...', tablet: '...', desktop: '...' } // Or just a string URL");
+    parts.push("  }");
+    parts.push("];");
+    parts.push("```");
+    parts.push("");
+    parts.push("### Implementation Summary:");
+    parts.push("```tsx");
+    parts.push("<OnboardingProvider steps={steps} defaultOpen={true}>");
+    parts.push("  <AppContent />");
+    parts.push("  <OnboardingModal />");
+    parts.push("</OnboardingProvider>");
+    parts.push("```");
 
     return parts.join("\n");
   };
@@ -243,10 +318,8 @@ function ModalWrapper({ config }: { config: PlaygroundConfig }) {
   const foregroundHsl = brightness > 128 ? '0 0% 0%' : '0 0% 100%';
 
   const style = {
-    ...(config.primaryColor !== "#6366f1" ? { 
-      '--primary': hsl,
-      '--primary-foreground': foregroundHsl
-    } : {}),
+    '--primary': hsl,
+    '--primary-foreground': foregroundHsl,
     ...(config.radius !== 0.5 ? { '--radius': `${config.radius}rem` } : {}),
   } as React.CSSProperties;
 

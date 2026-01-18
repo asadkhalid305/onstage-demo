@@ -14,6 +14,6 @@ export const DEFAULT_CONFIG: PlaygroundConfig = {
   backdrop: "default",
   gradient: "animated",
   allowClickOutside: true,
-  primaryColor: "#6366f1",
+  primaryColor: "#171717",
   radius: 0.5,
 };
