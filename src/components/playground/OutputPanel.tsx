@@ -1,6 +1,25 @@
 import { useState } from "react";
+import { OnboardingProvider, OnboardingModal, useOnboarding, type OnboardingStep } from "onstage";
 import { hexToHsl } from "../../utils/colors";
 import { type PlaygroundConfig, DEFAULT_CONFIG } from "./types";
+
+const playgroundSteps: OnboardingStep[] = [
+  {
+    title: "Design Your Experience",
+    description: "Use the controls to **customize** this modal in real-time.",
+    image: "https://placehold.co/1000x562/3b82f6/fff?text=Playground+Preview",
+  },
+  {
+    title: "Copy & Paste",
+    description: "When you are happy with the look, **copy the code** below!",
+    image: "https://placehold.co/1000x562/10b981/fff?text=Ready+to+Ship",
+  },
+  {
+      title: "All Done",
+      description: "You are ready to go!",
+      image: "https://placehold.co/1000x562/6366f1/fff?text=Done",
+  }
+];
 
 interface OutputPanelProps {
   config: PlaygroundConfig;
@@ -76,88 +95,153 @@ ${props.join("\n")}${styleString}
   };
 
   return (
-    <div style={{ 
-      background: '#111827', 
-      display: 'flex',
-      flexDirection: 'column',
-      flex: 1,
-      minHeight: 0, // Important for nested flex scroll
-      overflow: 'hidden' 
-    }}>
+    <OnboardingProvider steps={playgroundSteps} defaultOpen={false}>
       <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        padding: '16px 24px',
-        borderBottom: '1px solid #374151',
-        background: '#1f2937'
+        background: '#111827', 
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        minHeight: 0, // Important for nested flex scroll
+        overflow: 'hidden',
+        position: 'relative' // Ensure relative positioning for contained elements
       }}>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <button 
-            onClick={() => setActiveTab("prompt")}
-            style={{ 
-              background: 'none', 
-              border: 'none', 
-              color: activeTab === "prompt" ? 'white' : '#9ca3af', 
-              fontWeight: '700', 
-              fontSize: '0.9rem', 
-              cursor: 'pointer',
-              borderBottom: activeTab === "prompt" ? '2px solid #a855f7' : '2px solid transparent',
-              paddingBottom: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <span>✨ AI PROMPT</span>
-          </button>
-          <button 
-            onClick={() => setActiveTab("code")}
-            style={{ 
-              background: 'none', 
-              border: 'none', 
-              color: activeTab === "code" ? 'white' : '#9ca3af', 
-              fontWeight: '700', 
-              fontSize: '0.9rem', 
-              cursor: 'pointer',
-              borderBottom: activeTab === "code" ? '2px solid #6366f1' : '2px solid transparent',
-              paddingBottom: '4px'
-            }}
-          >
-            REACT CODE
-          </button>
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: '1fr auto 1fr',
+          alignItems: 'center',
+          padding: '16px 24px',
+          borderBottom: '1px solid #374151',
+          background: '#1f2937'
+        }}>
+          {/* Left: Tabs */}
+          <div style={{ display: 'flex', gap: '16px' }}>
+            <button 
+              onClick={() => setActiveTab("prompt")}
+              style={{ 
+                background: 'none', 
+                border: 'none', 
+                color: activeTab === "prompt" ? 'white' : '#9ca3af', 
+                fontWeight: '700', 
+                fontSize: '0.9rem', 
+                cursor: 'pointer',
+                borderBottom: activeTab === "prompt" ? '2px solid #a855f7' : '2px solid transparent',
+                paddingBottom: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <span>✨ AI PROMPT</span>
+            </button>
+            <button 
+              onClick={() => setActiveTab("code")}
+              style={{ 
+                background: 'none', 
+                border: 'none', 
+                color: activeTab === "code" ? 'white' : '#9ca3af', 
+                fontWeight: '700', 
+                fontSize: '0.9rem', 
+                cursor: 'pointer',
+                borderBottom: activeTab === "code" ? '2px solid #6366f1' : '2px solid transparent',
+                paddingBottom: '4px'
+              }}
+            >
+              REACT CODE
+            </button>
+          </div>
+
+          {/* Center: Launch Button */}
+          <LaunchButton />
+
+          {/* Right: Copy Button */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button 
+              onClick={() => navigator.clipboard.writeText(activeTab === "code" ? generateCode() : generatePrompt())}
+              style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                color: 'white', 
+                border: 'none', 
+                padding: '6px 12px', 
+                borderRadius: '6px', 
+                fontSize: '0.8rem', 
+                cursor: 'pointer',
+                transition: 'background 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+            >
+              Copy
+            </button>
+          </div>
         </div>
 
-        <button 
-          onClick={() => navigator.clipboard.writeText(activeTab === "code" ? generateCode() : generatePrompt())}
-          style={{ 
-            background: 'rgba(255,255,255,0.1)', 
-            color: 'white', 
-            border: 'none', 
-            padding: '6px 12px', 
-            borderRadius: '6px', 
-            fontSize: '0.8rem', 
-            cursor: 'pointer',
-            transition: 'background 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-        >
-          Copy
-        </button>
-      </div>
+        <div style={{ 
+          padding: '24px', 
+          overflowY: 'auto',
+          flex: 1
+        }}>
+          <pre style={{ margin: 0 }}>
+            <code style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#e5e7eb', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
+              {activeTab === "code" ? generateCode() : generatePrompt()}
+            </code>
+          </pre>
+        </div>
 
-      <div style={{ 
-        padding: '24px', 
-        overflowY: 'auto',
-        flex: 1
-      }}>
-        <pre style={{ margin: 0 }}>
-          <code style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#e5e7eb', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
-            {activeTab === "code" ? generateCode() : generatePrompt()}
-          </code>
-        </pre>
+        <ModalWrapper config={config} />
       </div>
-    </div>
+    </OnboardingProvider>
+  );
+}
+
+function LaunchButton() {
+  const { resetOnboarding } = useOnboarding();
+  return (
+    <button 
+      onClick={resetOnboarding}
+      style={{
+        padding: '8px 16px',
+        fontSize: '0.9rem',
+        fontWeight: '600',
+        background: 'white',
+        color: 'black',
+        border: '1px solid #ccc',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        transition: 'transform 0.1s'
+      }}
+      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+    >
+      Open Preview
+    </button>
+  );
+}
+
+function ModalWrapper({ config }: { config: PlaygroundConfig }) {
+  const hsl = hexToHsl(config.primaryColor);
+  
+  const r = parseInt(config.primaryColor.substr(1, 2), 16);
+  const g = parseInt(config.primaryColor.substr(3, 2), 16);
+  const b = parseInt(config.primaryColor.substr(5, 2), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  const foregroundHsl = brightness > 128 ? '0 0% 0%' : '0 0% 100%';
+
+  const style = {
+    ...(config.primaryColor !== "#6366f1" ? { 
+      '--primary': hsl,
+      '--primary-foreground': foregroundHsl
+    } : {}),
+    ...(config.radius !== 0.5 ? { '--radius': `${config.radius}rem` } : {}),
+  } as React.CSSProperties;
+
+  return (
+    <OnboardingModal 
+      theme={config.theme}
+      backdrop={config.backdrop}
+      gradient={config.gradient}
+      allowClickOutside={config.allowClickOutside}
+      style={style}
+    />
   );
 }

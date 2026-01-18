@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { type PlaygroundConfig, DEFAULT_CONFIG } from "./components/playground/types";
 import { Configurator } from "./components/playground/Configurator";
-import { PreviewArea } from "./components/playground/PreviewArea";
 import { OutputPanel } from "./components/playground/OutputPanel";
 
 export function Playground() {
@@ -31,10 +30,7 @@ export function Playground() {
         borderLeft: '1px solid #e5e7eb'
       }}>
         
-        {/* Top: Preview (Fixed/Shrinkable) */}
-        <PreviewArea config={config} />
-
-        {/* Bottom: Code Output (Flex Grow) */}
+        {/* Code Output with integrated Dashboard/Preview button */}
         <OutputPanel config={config} />
 
       </div>
