@@ -19,7 +19,7 @@ export function Header({ activeTab, setActiveTab }: HeaderProps) {
       zIndex: 10
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <img src="/logo.svg" alt="Onstage Logo" style={{ width: '32px', height: '32px' }} />
+        <img src="./logo.svg" alt="Onstage Logo" style={{ width: '32px', height: '32px' }} />
         <h1 style={{ 
           fontSize: '1.25rem', 
           fontWeight: '800', 
