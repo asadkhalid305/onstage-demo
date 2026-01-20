@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 // https://vite.dev/config/
-export default defineConfig({
-  base: '/apps/onstage/',
+export default defineConfig(({ mode }) => ({
+  base: mode === 'production' ? '/apps/onstage/' : '/',
   plugins: [react()],
   resolve: {
     alias: {
@@ -12,4 +12,4 @@ export default defineConfig({
       'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
     },
   },
-})
+}))
